@@ -16,10 +16,7 @@ on:
 jobs:
   build:
 
-    runs-on: ${{matrix.os}}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest, macOS-latest]
+    runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v2
@@ -28,7 +25,17 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 1.8
+        
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
+      
     - name: Build with Gradle
       run: ./gradlew build
+
+    - name: Build and Push docker image
+      uses: mr-smithers-excellent/docker-build-push@v4
+      with:
+        image: 891100/demo-app
+        registry: docker.io
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
